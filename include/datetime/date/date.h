@@ -18,6 +18,9 @@ class TimeDelta;
 class Date
 {
 public:
+
+    static std::optional<Date> mock_date;
+
     /**
      * Year of the date.
      */

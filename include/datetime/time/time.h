@@ -14,6 +14,7 @@
 #include "../src/util/macros.h"
 #include "../../../src/time/basic_time.h"
 #include "datetime/timedelta/timedelta.h"
+#include <optional>
 
 
 /**
@@ -23,6 +24,8 @@
 class Time : public BasicTime
 {
 public:
+
+    static std::optional<Time> mock_time;
 
     /**
      * 'Timezone' of the 'Time'.

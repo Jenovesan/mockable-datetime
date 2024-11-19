@@ -3,29 +3,39 @@
 #include <utility>
 #include "datetime/timedelta/timedelta.h"
 
+std::optional<Date> Date::mock_date;
+
 Date Date::today(int day_offset, Timezone timezone)
 {
-    // Get the current time
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
-
-    // Convert the system time to a std::tm struct
-    std::tm *now_tm = std::localtime(&t);
-
-    int year = now_tm->tm_year + 1900;
-    int month = now_tm->tm_mon + 1;
-    int day = now_tm->tm_mday;
-
-    Date ret = Date(year, month, day);
-
-    // Adjust date for non-local timezone
-    if (timezone != TZ::LOCAL)
+    Date ret;
+    if (mock_date.has_value())
     {
-        int hour = Time::now(0, 0, 0, 0, 0, 0, TZ::LOCAL).hour + TZ::LOCAL.get_utc_offset_diff(timezone);
-        if (hour >= Time::HOURS_PER_DAY)
-            ret.add_days(1);
-        else if (hour < 0)
-            ret.subtract_days(1);
+        ret = mock_date.value();
+    }
+    else
+    {
+        // Get the current time
+        auto now = std::chrono::system_clock::now();
+        std::time_t t = std::chrono::system_clock::to_time_t(now);
+
+        // Convert the system time to a std::tm struct
+        std::tm *now_tm = std::localtime(&t);
+
+        int year = now_tm->tm_year + 1900;
+        int month = now_tm->tm_mon + 1;
+        int day = now_tm->tm_mday;
+
+        ret = Date(year, month, day);
+
+        // Adjust date for non-local timezone
+        if (timezone != TZ::LOCAL)
+        {
+            int hour = Time::now(0, 0, 0, 0, 0, 0, TZ::LOCAL).hour + TZ::LOCAL.get_utc_offset_diff(timezone);
+            if (hour >= Time::HOURS_PER_DAY)
+                ret.add_days(1);
+            else if (hour < 0)
+                ret.subtract_days(1);
+        }
     }
 
     // Create date

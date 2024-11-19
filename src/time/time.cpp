@@ -5,39 +5,51 @@
 
 Timezone Time::default_timezone = TZ::EST;
 
+std::optional<Time> Time::mock_time;
+
 Time Time::now(uint8_t hour_offset, uint8_t minute_offset, uint8_t second_offset,
                uint16_t millisecond_offset, uint16_t microsecond_offset,
                uint16_t nanosecond_offset, Timezone timezone)
 {
-    // Get the current local time
-    std::time_t now = std::time(nullptr);
-    std::tm local_tm = *std::localtime(&now);
+    Time time;
+    if (mock_time.has_value())
+    {
+        time = mock_time.value();
+    }
+    else
+    {
+        // Get the current local time
+        std::time_t now = std::time(nullptr);
+        std::tm local_tm = *std::localtime(&now);
 
-    // Extract the different time components
-    int hour = local_tm.tm_hour;
-    int minute = local_tm.tm_min;
-    int second = local_tm.tm_sec;
+        // Extract the different time components
+        int hour = local_tm.tm_hour;
+        int minute = local_tm.tm_min;
+        int second = local_tm.tm_sec;
 
-    auto currentTimePoint = std::chrono::high_resolution_clock::now() + std::chrono::hours(hour);
+        auto currentTimePoint = std::chrono::high_resolution_clock::now() + std::chrono::hours(hour);
 
-    // Convert the time point to nanoseconds
-    auto nanoseconds = std::chrono::time_point_cast<std::chrono::nanoseconds>(currentTimePoint);
+        // Convert the time point to nanoseconds
+        auto nanoseconds = std::chrono::time_point_cast<std::chrono::nanoseconds>(currentTimePoint);
 
-    // Extract the nanoseconds count
-    auto nanosecondsCount = nanoseconds.time_since_epoch().count();
+        // Extract the nanoseconds count
+        auto nanosecondsCount = nanoseconds.time_since_epoch().count();
 
-    // Calculate milliseconds, microseconds, and remaining nanoseconds
-    int millisecond = static_cast<int>(nanosecondsCount / 1'000'000 % 1'000);
-    int microsecond = static_cast<int>(nanosecondsCount / 1'000 % 1'000);
-    int nanosecond = static_cast<int>(nanosecondsCount % 1'000);
+        // Calculate milliseconds, microseconds, and remaining nanoseconds
+        int millisecond = static_cast<int>(nanosecondsCount / 1'000'000 % 1'000);
+        int microsecond = static_cast<int>(nanosecondsCount / 1'000 % 1'000);
+        int nanosecond = static_cast<int>(nanosecondsCount % 1'000);
 
-    Time time = Time(hour + hour_offset,
-                     minute + minute_offset,
-                     second + second_offset,
-                     millisecond + millisecond_offset,
-                     microsecond + microsecond_offset,
-                     nanosecond + nanosecond_offset,
-                     TZ::LOCAL); // Gets the time in local time, so Timezone must be TZ::LOCAL
+        time = Time(
+            hour + hour_offset,
+            minute + minute_offset,
+            second + second_offset,
+            millisecond + millisecond_offset,
+            microsecond + microsecond_offset,
+            nanosecond + nanosecond_offset,
+            TZ::LOCAL
+        ); // Gets the time in local time, so Timezone must be TZ::LOCAL
+    }
 
     time.set_timezone(timezone); // Set the local time to 'timezone'.
 
