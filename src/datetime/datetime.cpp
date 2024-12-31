@@ -202,8 +202,11 @@ Datetime Datetime::from_ms(size_t timestamp, Timezone to_timezone, Timezone from
     while (timestamp >= MILLISECONDS_PER_NON_LEAP_YEAR)
     {
         size_t ms_in_year = is_leap_year(year)
-                                    ? MILLISECONDS_PER_LEAP_YEAR
-                                    : MILLISECONDS_PER_NON_LEAP_YEAR;
+            ? MILLISECONDS_PER_LEAP_YEAR
+            : MILLISECONDS_PER_NON_LEAP_YEAR;
+
+        if (timestamp < ms_in_year) break;  // Prevent overshooting the end of the year.
+
         timestamp -= ms_in_year;
         year++;
     }
