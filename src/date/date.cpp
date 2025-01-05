@@ -319,14 +319,14 @@ bool Date::is_valid_day() const
     return day <= max_days_in_month(month, year) && day >= 1;
 }
 
-Date Date::operator+(const Days& days)
+Date Date::operator+(const Days& days) const
 {
     Date date = (*this);
     date += days;
     return date;
 }
 
-Date Date::operator-(const Days &days)
+Date Date::operator-(const Days &days) const
 {
     Date date = (*this);
     date -= days;
