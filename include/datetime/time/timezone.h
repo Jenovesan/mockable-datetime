@@ -170,6 +170,8 @@ namespace TZ
                 return TZ::EDT;
             else if (timezone_string == "Pacific Daylight Time")
                 return TZ::PDT;
+            else if (timezone_string == "UTC")
+                return TZ::UTC;
             throw std::invalid_argument(fmt::format("'{}' is not a valid timezone string", timezone_string));
         }
 
