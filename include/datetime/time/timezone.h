@@ -162,7 +162,7 @@ namespace TZ
                 return TZ::PST;
             else if (timezone_string == "Central Standard Time" || timezone_string == "Central America Standard Time" || timezone_string == "CST")
                 return TZ::CST;
-            else if (timezone_string == "Central Daylight Time")
+            else if (timezone_string == "Central Daylight Time" || timezone_string == "CDT")
                 return TZ::CDT;
             else if (timezone_string == "Eastern Standard Time")
                 return TZ::EST;
